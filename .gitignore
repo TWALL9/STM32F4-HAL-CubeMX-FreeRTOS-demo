@@ -31,3 +31,9 @@
 *.exe
 *.out
 *.app
+*.elf
+*.elf.launch
+/Debug/
+
+#truestudio stuff
+.settings/
