@@ -66,8 +66,6 @@ osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-osThreadId redLedTaskHandle;
-osThreadId blueLedTaskHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,11 +140,21 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  osThreadDef(redLed, RedLedTask, osPriorityNormal, 0, 128);
-  redLedTaskHandle = osThreadCreate(osThread(redLed), NULL);
 
-  osThreadDef(blueLed, BlueLedTask, osPriorityNormal, 0, 128);
-  blueLedTaskHandle = osThreadCreate(osThread(blueLed), NULL);
+  xTaskCreate((TaskFunction_t)RedLedTask,         //function pointer
+    (const char*) "redLedTask",   //task name
+    configMINIMAL_STACK_SIZE,     //stack size
+    NULL,                         //parameters to pass to the task
+    1,                            //task priority
+    NULL);                        //pass handle to the created task
+
+  xTaskCreate((TaskFunction_t)BlueLedTask,         //function pointer
+    (const char*) "blueLedTask",   //task name
+    configMINIMAL_STACK_SIZE,     //stack size
+    NULL,                         //parameters to pass to the task
+    1,                            //task priority
+    NULL);                        //pass handle to the created task
+
 
   /* USER CODE END RTOS_THREADS */
 
@@ -420,7 +428,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void RedLedTask(void const * pvArgument){  
+void RedLedTask(void const * pvArgument){
 
   for(;;){
     HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET); //LD5 = red
