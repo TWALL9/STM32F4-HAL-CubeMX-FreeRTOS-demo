@@ -423,20 +423,21 @@ static void MX_GPIO_Init(void)
 void RedLedTask(void const * pvArgument){  
 
   for(;;){
-    HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_SET); //LD6 = blue
+    HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET); //LD5 = red
     osDelay(1000);
-    HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET);
     osDelay(1000);
   }
 }
 
-//this task executes first
+//this task executes first for whatever reason
+//probably because it was the most recently created task
 void BlueLedTask(void const * pvArgument){
 
   for(;;){
-    HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET); //LD5 = red
+    HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_SET); //LD6 = blue
     osDelay(1000);
-    HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET);
     osDelay(1000);
   }
 }
