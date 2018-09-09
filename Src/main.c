@@ -50,7 +50,6 @@
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
-#include "usb_host.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -67,7 +66,8 @@ osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+osThreadId redLedTaskHandle;
+osThreadId blueLedTaskHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,7 +80,8 @@ void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+void RedLedTask(void const * pvArgument);
+void BlueLedTask(void const * pvArgument);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -141,7 +142,12 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+  osThreadDef(redLed, RedLedTask, osPriorityNormal, 0, 128);
+  redLedTaskHandle = osThreadCreate(osThread(redLed), NULL);
+
+  osThreadDef(blueLed, BlueLedTask, osPriorityNormal, 0, 128);
+  blueLedTaskHandle = osThreadCreate(osThread(blueLed), NULL);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -306,6 +312,10 @@ static void MX_SPI1_Init(void)
         * EXTI
      PC3   ------> I2S2_SD
      PB10   ------> I2S2_CK
+     PA9   ------> USB_OTG_FS_VBUS
+     PA10   ------> USB_OTG_FS_ID
+     PA11   ------> USB_OTG_FS_DM
+     PA12   ------> USB_OTG_FS_DP
 */
 static void MX_GPIO_Init(void)
 {
@@ -381,6 +391,20 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : VBUS_FS_Pin */
+  GPIO_InitStruct.Pin = VBUS_FS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(VBUS_FS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : OTG_FS_ID_Pin OTG_FS_DM_Pin OTG_FS_DP_Pin */
+  GPIO_InitStruct.Pin = OTG_FS_ID_Pin|OTG_FS_DM_Pin|OTG_FS_DP_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   /*Configure GPIO pin : OTG_FS_OverCurrent_Pin */
   GPIO_InitStruct.Pin = OTG_FS_OverCurrent_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -396,14 +420,31 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void RedLedTask(void const * pvArgument){  
+
+  for(;;){
+    HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_SET);
+    osDelay(1000);
+    HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET);
+    osDelay(1000);
+  }
+}
+
+void BlueLedTask(void const * pvArgument){
+
+  for(;;){
+    HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET);
+    osDelay(1000);
+    HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET);
+    osDelay(1000);
+  }
+}
 
 /* USER CODE END 4 */
 
 /* StartDefaultTask function */
 void StartDefaultTask(void const * argument)
 {
-  /* init code for USB_HOST */
-  MX_USB_HOST_Init();
 
   /* USER CODE BEGIN 5 */
   /* Infinite loop */

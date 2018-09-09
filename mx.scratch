@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project>
-<ProjectName>/home/tom/discovery_rtos/discovery_rtos/\discovery_rtos</ProjectName>
+<ProjectName>/home/tom/discovery_rtos/\discovery_rtos</ProjectName>
 <ProjectNature>C</ProjectNature> 
 <CMSIS>../Drivers/CMSIS</CMSIS>
 <HAL_Driver>/home/tom/STM32Cube/Repository//STM32Cube_FW_F4_V1.21.0/Drivers/CMSIS</HAL_Driver>
@@ -9,6 +9,8 @@
 
 <filestoremove>
     <file>
+    <name>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c</name>
+    <name>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c</name>
     </file>
 </filestoremove>
 
@@ -32,7 +34,7 @@
     <usedDebug>true</usedDebug>
     	<debugprobe>swd</debugprobe>
     <optimization></optimization>
-    <icfloc>1</icfloc>
+    <icfloc>0</icfloc>
     <Adefines>
         <define></define>
     </Adefines>   
@@ -60,8 +62,6 @@
 	   <include>../Drivers/STM32F4xx_HAL_Driver/Inc</include>
 	   <include>../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy</include>
 	   <include>../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F</include>
-	   <include>../Middlewares/ST/STM32_USB_Host_Library/Core/Inc</include>
-	   <include>../Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc</include>
 	   <include>../Drivers/CMSIS/Device/ST/STM32F4xx/Include</include>
 	   <include>../Middlewares/Third_Party/FreeRTOS/Source/include</include>
 	   <include>../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS</include>
