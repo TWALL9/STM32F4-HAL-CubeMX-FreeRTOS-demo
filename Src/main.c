@@ -78,6 +78,8 @@ void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
+
+//These two functions will be our two tasks.
 void RedLedTask(void const * pvArgument);
 void BlueLedTask(void const * pvArgument);
 /* USER CODE END PFP */
@@ -140,20 +142,36 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
+  
+  /*
+    osThreadDef() is a STM CMSIS abstraction function for declaring FreeRTOS tasks.  
+    We choose not to use it as FreeRTOS ports are already quite universal
+  */
 
-  xTaskCreate((TaskFunction_t)RedLedTask,         //function pointer
-    (const char*) "redLedTask",   //task name
-    configMINIMAL_STACK_SIZE,     //stack size
-    NULL,                         //parameters to pass to the task
-    1,                            //task priority
-    NULL);                        //pass handle to the created task
+  xTaskCreate((TaskFunction_t)RedLedTask,         //Task function pointer
+    (const char*) "redLedTask",                   //task name
+    configMINIMAL_STACK_SIZE,                     //stack size
+    NULL,                                         //parameters to pass to the task
+    1,                                            //task priority.  Lower number, lower priority
+    NULL);                                        //pass handle to the created task
 
-  xTaskCreate((TaskFunction_t)BlueLedTask,         //function pointer
-    (const char*) "blueLedTask",   //task name
-    configMINIMAL_STACK_SIZE,     //stack size
-    NULL,                         //parameters to pass to the task
-    1,                            //task priority
-    NULL);                        //pass handle to the created task
+  /*
+    These two tasks are the same priority, so FreeRTOS will try to schedule them at the same time.  This is called Time Slicing
+    do be aware that these tasks are low priority on purpose.  
+    Higher priority tasks will always pre-empt these two during context switches
+  */
+
+  xTaskCreate((TaskFunction_t)BlueLedTask,        //Task function pointer
+    (const char*) "blueLedTask",                  //task name
+    configMINIMAL_STACK_SIZE,                     //stack size
+    NULL,                                         //parameters to pass to the task
+    1,                                            //task priority
+    NULL);                                        //pass handle to the created task
+
+  /*
+    One of the things we can do here is create two tasks that use the SAME task function, 
+    but pass the LED we want to use as the parameter to that task!
+  */
 
 
   /* USER CODE END RTOS_THREADS */
@@ -428,25 +446,37 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+/*
+  RedLedTask
+  A simple 1/2 Hz blinenlight for the red LED (pin D14)
+  turns on the light, then places itself in the Blocked state to let other tasks run
+  when the 1000ms are over, turn off the light, and do another 1000ms wait
+*/
+
 void RedLedTask(void const * pvArgument){
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
 
   for(;;){
     HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET); //LD5 = red
-    osDelay(1000);
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET);
-    osDelay(1000);
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
   }
 }
 
 //this task executes first for whatever reason
 //probably because it was the most recently created task
 void BlueLedTask(void const * pvArgument){
-
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
+  
   for(;;){
     HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_SET); //LD6 = blue
-    osDelay(1000);
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET);
-    osDelay(1000);
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
   }
 }
 
