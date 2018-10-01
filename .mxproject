@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=/home/tom/discovery_rtos/Inc
+HeaderPath=/home/tom/STM32F4-HAL-CubeMX-FreeRTOS-demo/Inc
 HeaderFiles=FreeRTOSConfig.h;usb_host.h;usbh_conf.h;usbh_platform.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=/home/tom/discovery_rtos/Src
+SourcePath=/home/tom/STM32F4-HAL-CubeMX-FreeRTOS-demo/Src
 SourceFiles=freertos.c;usb_host.c;usbh_conf.c;usbh_platform.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;stm32f4xx_hal_timebase_TIM.c;main.c;
 
 [PreviousLibFiles]
